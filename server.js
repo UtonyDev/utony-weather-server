@@ -32,13 +32,19 @@ redisClient.connect();
 
 // Define your weather API endpoint
 app.get('/api/weather', async (req, res) => {
-  const { city, country } = req.query;
+  const { city, country, latitude, longitude } = req.query;
 
-  if (!city || !country) {
-    return res.status(400).json({ error: 'City and country are required' });
+  // Check if the required parameters are provided
+  if ((!city || !country) && (!latitude || !longitude)) {
+    return res.status(400).json({ error: 'City and country or latitude and longitude are required' });
   }
 
-  const cacheKey = `${city}:${country}`;
+  let cacheKey;
+  if (city && country) {
+    cacheKey = `${city}:${country}`;
+  } else {
+    cacheKey = `${latitude}:${longitude}`;
+  }
 
   try {
     // Check Redis cache
@@ -48,19 +54,22 @@ app.get('/api/weather', async (req, res) => {
       return res.json(JSON.parse(cachedData));
     }
 
-    // Fetch data from Visual Crossing API
-    const response = await axios.get(
-      `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city},${country}?key=${process.env.WEATHER_API_KEY}`
-    );
+    // Fetch data from Visual Crossing API based on the parameters
+    let apiUrl;
+    if (city && country) {
+      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city},${country}?key=${process.env.WEATHER_API_KEY}`;
+    } else {
+      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude},${longitude}?key=${process.env.WEATHER_API_KEY}`;
+    }
+
+    const response = await axios.get(apiUrl);
     const weatherData = response.data;
 
-    // Store transformed data in Redis with a TTL of 1 hour
+    // Store data in Redis cache with a TTL of 1 hour
     await redisClient.setEx(cacheKey, 3600, JSON.stringify(weatherData));
-    console.log('Transformed data saved to cache:', weatherData);
+    console.log('Data saved to cache:', weatherData);
 
     res.json(weatherData);
-    console.log(weatherData);
-
   } catch (error) {
     console.error('Error fetching weather data:', error.message);
     res.status(500).json({ error: 'Error fetching weather data' });
