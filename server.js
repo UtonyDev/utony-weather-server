@@ -54,7 +54,7 @@ app.get('/api/weather', async (req, res) => {
       return res.json(JSON.parse(cachedData));
     }
 
-    const unitGroup = unit === 'metric' || unit === 'us' ? unit : 'us';
+    const unitGroup = unit === 'metric' || unit === 'us' ? unit : 'metric';
     // Fetch data from Visual Crossing API based on the parameters
     let apiUrl;
     if (city && country) {
