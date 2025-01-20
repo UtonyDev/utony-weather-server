@@ -58,7 +58,7 @@ app.get('/api/weather', async (req, res) => {
     // Fetch data from Visual Crossing API based on the parameters
     let apiUrl;
     if (city && country) {
-      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city},${country}?unitGroup=${unitGroup}?key=${process.env.WEATHER_API_KEY}`;
+      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city},${country}?key=${process.env.WEATHER_API_KEY}`;
     } else {
       apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude},${longitude}?unitGroup=${unitGroup}?key=${process.env.WEATHER_API_KEY}`;
     }
