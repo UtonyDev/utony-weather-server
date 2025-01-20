@@ -43,7 +43,7 @@ app.get('/api/weather', async (req, res) => {
   if (city && country) {
     cacheKey = `${city}:${country}:${unit}`;
   } else {
-    cacheKey = `${latitude}:${longitude}:${unit}`;
+    cacheKey = `${latitude}:${longitude}`;
   }
 
   try {
@@ -54,13 +54,13 @@ app.get('/api/weather', async (req, res) => {
       return res.json(JSON.parse(cachedData));
     }
 
-    const unitGroup = unit === 'metric' || unit === 'us' || unit === 'uk' ? unit : 'metric'; 
+    const unitGroup = unit === 'metric' || unit === 'us' ? unit : 'us';
     // Fetch data from Visual Crossing API based on the parameters
     let apiUrl;
     if (city && country) {
-      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city},${country}?unitGroup=${unitGroup}&key=${process.env.WEATHER_API_KEY}`;
+      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city},${country}?unitGroup=${unitGroup}?key=${process.env.WEATHER_API_KEY}`;
     } else {
-      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude},${longitude}?unitGroup=${unitGroup}&key=${process.env.WEATHER_API_KEY}`;
+      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude},${longitude}?unitGroup=${unitGroup}?key=${process.env.WEATHER_API_KEY}`;
     }
 
     const response = await axios.get(apiUrl);
