@@ -32,7 +32,7 @@ redisClient.connect();
 
 // Define your weather API endpoint
 app.get('/api/weather', async (req, res) => {
-  const { city, country, latitude, longitude, unit } = req.query;
+  const { city, country, latitude, longitude} = req.query;
 
   // Check if the required parameters are provided
   if ((!city || !country ) && (!latitude || !longitude)) {
@@ -57,11 +57,11 @@ app.get('/api/weather', async (req, res) => {
     // Fetch data from Visual Crossing API based on the parameters
     let apiUrl;
     if (city && country) {
-      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city},${country}&key=${process.env.WEATHER_API_KEY}`;
+      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city},${country}?key=${process.env.WEATHER_API_KEY}`;
     } else {
-      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude},${longitude}&key=${process.env.WEATHER_API_KEY}`;
+      apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude},${longitude}?key=${process.env.WEATHER_API_KEY}`;
     }
-
+    
     const response = await axios.get(apiUrl);
     const weatherData = response.data;
 
